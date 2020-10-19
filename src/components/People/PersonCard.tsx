@@ -1,12 +1,12 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
-import {Person} from './PeopleList';
+import { Person } from './types';
 
 interface PropTypes {
   person: Person;
 }
 
-export default function PokemonCard({person}: PropTypes) {
+export default function PersonCard({person}: PropTypes) {
   return (
     <div className="cards-container">
       <div className="card">

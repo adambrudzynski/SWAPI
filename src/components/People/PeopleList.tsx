@@ -1,82 +1,80 @@
 import React, {useEffect, useState} from 'react';
-import Pagination from './Pagination';
-import PokemonCard from './PersonCard';
-import './card.css';
+import PersonCard from './PersonCard';
+import {apiResponse, Person} from './types';
+import PeopleFilter from './PeopleFilter';
 
-export interface Person {
-  name: string;
-  height: number;
-  mass: number;
-  hair_color: string;
-  skin_color: string;
-  eye_color: string;
-  birth_year: string;
-  gender: string;
-  homeworld: string;
-  films: string[] | [];
-  species: string[] | [];
-  starships: string[] | [];
-  url: string;
-}
-
-export interface apiResponse {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: [Person];
-}
+const defaultFilters = {
+  search: '',
+  gender: '',
+};
 
 export function PeopleList() {
-  const [people, setPeople] = useState<Person[] | string[]>([]);
-  const [currentPage, setCurrentPage] = useState<string>(
-    'https://swapi.dev/api/people/'
-  );
-  const [nextPage, setNextPage] = useState<string | null>(null);
-  const [prevPage, setPrevPage] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [people, setPeople] = useState<Person[]>([]);
+  const [filters, setFilters] = useState(defaultFilters);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    fetchPokemons(currentPage);
-  }, [currentPage]);
+    fetcher('https://swapi.dev/api/people/');
+  }, []);
 
-  const handlePagination = (action: 'next' | 'prev'): void => {
-    if (nextPage && action === 'next') {
-      setCurrentPage(nextPage);
-    } else if (prevPage && action === 'prev') {
-      setCurrentPage(prevPage);
-    }
+  let results: Person[] = [];
+  const fetcher = (url: string) => {
+    fetch(url)
+      .then(function (response) {
+        return response.json();
+      })
+      .then(function (json: apiResponse) {
+        results.push(...json.results);
+        setPeople(results);
+        if (json.next) {
+          fetcher(json.next);
+        }
+        if (!json.next) {
+          setPeople(results);
+          setLoading(false);
+        }
+      })
+      .catch(function (err) {
+        setError(true);
+      });
   };
 
-  const fetchPokemons = async (url: string) => {
-    try {
-      setLoading(true);
-      const peopleApi = await fetch(url);
-      const peopleList: apiResponse = await peopleApi.json();
-      setPeople(peopleList.results);
-      setNextPage(peopleList.next);
-      setPrevPage(peopleList.previous);
-      setLoading(false);
-    } catch (error) {
-      setError(true);
-      setLoading(false);
-    }
+  const handleFilters = (name: string, value: string) => {
+    console.log(name, value);
+    setFilters({
+      ...filters,
+      [name]: value,
+    });
   };
 
-  if (loading) return <> "Loading" </>;
+  const resetFilters = () => setFilters(defaultFilters);
+
+  const searching = (element: Person) => {
+    return element.name.toLowerCase().includes(filters.search.toLowerCase());
+  };
+  const filtering = (element: Person) => {
+    return filters.gender === ''
+      ? element
+      : element.gender === filters.gender;
+  };
+  if (loading && people.length < 1) return <> "Loading" </>;
   if (error) return <>"Error occured, try again"</>;
 
   return (
     <>
-      <Pagination
-        handlePagination={handlePagination}
-        next={nextPage ? true : false}
-        prev={prevPage ? true : false}
+      <PeopleFilter
+        filters={filters}
+        handleFilters={handleFilters}
+        resetFilters={resetFilters}
       />
       <div className="list-container">
-        {(people as Person[]).map((person: Person) => {
-          return <PokemonCard key={person.name} person={person} />;
-        })}
+        {(people as Person[])
+          .filter(searching)
+          .filter(filtering)
+          .map((person: Person) => {
+            return <PersonCard key={person.name} person={person} />;
+          })}
       </div>
     </>
   );
