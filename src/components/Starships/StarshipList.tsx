@@ -1,7 +1,8 @@
 import React, {useState} from 'react';
-import PersonCard from './PersonCard';
-import {Person} from './types';
-import PeopleFilter from './PeopleFilter';
+// import PersonCard from './PersonCard';
+import {Starship} from './types';
+import StarshipFilter from './StarshipsFilter';
+import StarshipCard from './StarshipCard';
 import useFetchAll from '../hooks/useFetchAll';
 
 const defaultFilters = {
@@ -9,8 +10,8 @@ const defaultFilters = {
   gender: '',
 };
 
-export function PeopleList() {
-  const [loading, error, people] = useFetchAll('https://swapi.dev/api/people/');
+export function StarshipsList() {
+  const [loading, error, starships] = useFetchAll('https://swapi.dev/api/starships/');
   const [filters, setFilters] = useState(defaultFilters);
 
   const handleFilters = (name: string, value: string) => {
@@ -23,28 +24,29 @@ export function PeopleList() {
 
   const resetFilters = () => setFilters(defaultFilters);
 
-  const searching = (element: Person) => {
+  const searching = (element: Starship) => {
     return element.name.toLowerCase().includes(filters.search.toLowerCase());
   };
-  const filtering = (element: Person) => {
-    return filters.gender === '' ? element : element.gender === filters.gender;
+  const filtering = (element: Starship) => {
+    return  element
+    // filters.gender === '' ? element : element. === filters.gender;
   };
-  if (loading && people.length < 1) return <> "Loading" </>;
+  if (loading && starships.length < 1) return <> "Loading" </>;
   if (error) return <>"Error occured, try again"</>;
 
   return (
     <>
-      <PeopleFilter
+      <StarshipFilter
         filters={filters}
         handleFilters={handleFilters}
         resetFilters={resetFilters}
       />
       <div className="list-container">
-        {(people as Person[])
+        {(starships as Starship[])
           .filter(searching)
           .filter(filtering)
-          .map((person: Person) => {
-            return <PersonCard key={person.name} person={person} />;
+          .map((starship: Starship) => {
+            return <StarshipCard key={starship.name} starship={starship} />;
           })}
       </div>
     </>

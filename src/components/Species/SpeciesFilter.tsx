@@ -11,13 +11,13 @@ type Filters = {
   gender: string;
 };
 
-export default function PeopleFilter({
+export default function SpeciesFilter({
   filters,
   handleFilters,
   resetFilters,
 }: Props) {
   return (
-    <div  className='filters'>
+    <div className='filters'>
       <input
         placeholder="Search..."
         type="text"

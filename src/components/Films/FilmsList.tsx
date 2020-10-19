@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
-import PersonCard from './PersonCard';
-import {Person} from './types';
-import PeopleFilter from './PeopleFilter';
+import {Film} from './types';
+import FilmFilter from './FilmsFilter';
+import FilmCard from './FilmCard';
 import useFetchAll from '../hooks/useFetchAll';
 
 const defaultFilters = {
@@ -9,8 +9,8 @@ const defaultFilters = {
   gender: '',
 };
 
-export function PeopleList() {
-  const [loading, error, people] = useFetchAll('https://swapi.dev/api/people/');
+export function FilmsList() {
+  const [loading, error, films] = useFetchAll('https://swapi.dev/api/films/');
   const [filters, setFilters] = useState(defaultFilters);
 
   const handleFilters = (name: string, value: string) => {
@@ -23,28 +23,28 @@ export function PeopleList() {
 
   const resetFilters = () => setFilters(defaultFilters);
 
-  const searching = (element: Person) => {
-    return element.name.toLowerCase().includes(filters.search.toLowerCase());
+  const searching = (element: Film) => {
+    return element.title.toLowerCase().includes(filters.search.toLowerCase());
   };
-  const filtering = (element: Person) => {
-    return filters.gender === '' ? element : element.gender === filters.gender;
+  const filtering = (element: Film) => {
+    return filters.gender === '' ? element : element.director === filters.gender;
   };
-  if (loading && people.length < 1) return <> "Loading" </>;
+  if (loading && films.length < 1) return <> "Loading" </>;
   if (error) return <>"Error occured, try again"</>;
 
   return (
     <>
-      <PeopleFilter
+      <FilmFilter
         filters={filters}
         handleFilters={handleFilters}
         resetFilters={resetFilters}
       />
       <div className="list-container">
-        {(people as Person[])
+        {(films as Film[])
           .filter(searching)
           .filter(filtering)
-          .map((person: Person) => {
-            return <PersonCard key={person.name} person={person} />;
+          .map((film: Film) => {
+            return <FilmCard key={film.title} film={film} />;
           })}
       </div>
     </>

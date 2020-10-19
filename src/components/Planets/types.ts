@@ -19,5 +19,5 @@ export interface apiPlanetsResponse {
   count: number;
   next: string | null;
   previous: string | null;
-  results: [Planet];
+  results: Planet[];
 }

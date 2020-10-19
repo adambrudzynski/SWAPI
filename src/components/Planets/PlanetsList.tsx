@@ -1,7 +1,8 @@
 import React, {useState} from 'react';
-import PersonCard from './PersonCard';
-import {Person} from './types';
-import PeopleFilter from './PeopleFilter';
+// import PersonCard from './PersonCard';
+import {Planet} from './types';
+import PlanetFilter from './PlanetsFilter';
+import PlanetCard from './PlanetCard';
 import useFetchAll from '../hooks/useFetchAll';
 
 const defaultFilters = {
@@ -9,8 +10,8 @@ const defaultFilters = {
   gender: '',
 };
 
-export function PeopleList() {
-  const [loading, error, people] = useFetchAll('https://swapi.dev/api/people/');
+export function PlanetsList() {
+  const [loading, error, planets] = useFetchAll('https://swapi.dev/api/planets/');
   const [filters, setFilters] = useState(defaultFilters);
 
   const handleFilters = (name: string, value: string) => {
@@ -23,28 +24,28 @@ export function PeopleList() {
 
   const resetFilters = () => setFilters(defaultFilters);
 
-  const searching = (element: Person) => {
+  const searching = (element: Planet) => {
     return element.name.toLowerCase().includes(filters.search.toLowerCase());
   };
-  const filtering = (element: Person) => {
-    return filters.gender === '' ? element : element.gender === filters.gender;
+  const filtering = (element: Planet) => {
+    return filters.gender === '' ? element : element.diameter === filters.gender;
   };
-  if (loading && people.length < 1) return <> "Loading" </>;
+  if (loading && planets.length < 1) return <> "Loading" </>;
   if (error) return <>"Error occured, try again"</>;
 
   return (
     <>
-      <PeopleFilter
+      <PlanetFilter
         filters={filters}
         handleFilters={handleFilters}
         resetFilters={resetFilters}
       />
       <div className="list-container">
-        {(people as Person[])
+        {(planets as Planet[])
           .filter(searching)
           .filter(filtering)
-          .map((person: Person) => {
-            return <PersonCard key={person.name} person={person} />;
+          .map((planet: Planet) => {
+            return <PlanetCard key={planet.name} planet={planet} />;
           })}
       </div>
     </>

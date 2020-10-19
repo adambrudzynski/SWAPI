@@ -11,7 +11,7 @@ type Filters = {
   gender: string;
 };
 
-export default function PeopleFilter({
+export default function FilmFilter({
   filters,
   handleFilters,
   resetFilters,

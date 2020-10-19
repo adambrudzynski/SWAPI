@@ -1,7 +1,8 @@
 import React, {useState} from 'react';
-import PersonCard from './PersonCard';
-import {Person} from './types';
-import PeopleFilter from './PeopleFilter';
+// import PersonCard from './PersonCard';
+import {Vehicle} from './types';
+import VehicleFilter from './VehiclesFilter';
+import VehicleCard from './VehicleCard';
 import useFetchAll from '../hooks/useFetchAll';
 
 const defaultFilters = {
@@ -9,8 +10,8 @@ const defaultFilters = {
   gender: '',
 };
 
-export function PeopleList() {
-  const [loading, error, people] = useFetchAll('https://swapi.dev/api/people/');
+export function VehiclesList() {
+  const [loading, error, vehicles] = useFetchAll('https://swapi.dev/api/vehicles/');
   const [filters, setFilters] = useState(defaultFilters);
 
   const handleFilters = (name: string, value: string) => {
@@ -23,28 +24,29 @@ export function PeopleList() {
 
   const resetFilters = () => setFilters(defaultFilters);
 
-  const searching = (element: Person) => {
+  const searching = (element: Vehicle) => {
     return element.name.toLowerCase().includes(filters.search.toLowerCase());
   };
-  const filtering = (element: Person) => {
-    return filters.gender === '' ? element : element.gender === filters.gender;
+  const filtering = (element: Vehicle) => {
+    return  element
+    // filters.gender === '' ? element : element. === filters.gender;
   };
-  if (loading && people.length < 1) return <> "Loading" </>;
+  if (loading && vehicles.length < 1) return <> "Loading" </>;
   if (error) return <>"Error occured, try again"</>;
 
   return (
     <>
-      <PeopleFilter
+      <VehicleFilter
         filters={filters}
         handleFilters={handleFilters}
         resetFilters={resetFilters}
       />
       <div className="list-container">
-        {(people as Person[])
+        {(vehicles as Vehicle[])
           .filter(searching)
           .filter(filtering)
-          .map((person: Person) => {
-            return <PersonCard key={person.name} person={person} />;
+          .map((vehicle: Vehicle) => {
+            return <VehicleCard key={vehicle.name} vehicle={vehicle} />;
           })}
       </div>
     </>

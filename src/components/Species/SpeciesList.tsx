@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
-import PersonCard from './PersonCard';
-import {Person} from './types';
-import PeopleFilter from './PeopleFilter';
+import {Species} from './types';
+import SpeciesFilter from './SpeciesFilter';
+import SpeciesCard from './SpeciesCard';
 import useFetchAll from '../hooks/useFetchAll';
 
 const defaultFilters = {
@@ -9,8 +9,8 @@ const defaultFilters = {
   gender: '',
 };
 
-export function PeopleList() {
-  const [loading, error, people] = useFetchAll('https://swapi.dev/api/people/');
+export function SpeciessList() {
+  const [loading, error, species] = useFetchAll('https://swapi.dev/api/species/');
   const [filters, setFilters] = useState(defaultFilters);
 
   const handleFilters = (name: string, value: string) => {
@@ -23,28 +23,29 @@ export function PeopleList() {
 
   const resetFilters = () => setFilters(defaultFilters);
 
-  const searching = (element: Person) => {
+  const searching = (element: Species) => {
     return element.name.toLowerCase().includes(filters.search.toLowerCase());
   };
-  const filtering = (element: Person) => {
-    return filters.gender === '' ? element : element.gender === filters.gender;
+  const filtering = (element: Species) => {
+    return  element
+    // filters.gender === '' ? element : element. === filters.gender;
   };
-  if (loading && people.length < 1) return <> "Loading" </>;
+  if (loading && species.length < 1) return <> "Loading" </>;
   if (error) return <>"Error occured, try again"</>;
 
   return (
     <>
-      <PeopleFilter
+      <SpeciesFilter
         filters={filters}
         handleFilters={handleFilters}
         resetFilters={resetFilters}
       />
       <div className="list-container">
-        {(people as Person[])
+        {(species as Species[])
           .filter(searching)
           .filter(filtering)
-          .map((person: Person) => {
-            return <PersonCard key={person.name} person={person} />;
+          .map((species: Species) => {
+            return <SpeciesCard key={species.name} species={species} />;
           })}
       </div>
     </>

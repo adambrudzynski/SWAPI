@@ -1,3 +1,5 @@
+import { Planet } from "../Planets/types";
+
 export interface Person {
     name: string;
     height: number;
@@ -19,5 +21,5 @@ export interface Person {
     count: number;
     next: string | null;
     previous: string | null;
-    results: [Person];
+    results: Person[]| Planet[];
   }
