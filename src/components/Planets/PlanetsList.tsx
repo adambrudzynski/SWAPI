@@ -1,13 +1,13 @@
 import React, {useState} from 'react';
-// import PersonCard from './PersonCard';
 import {Planet} from './types';
 import PlanetFilter from './PlanetsFilter';
 import PlanetCard from './PlanetCard';
 import useFetchAll from '../hooks/useFetchAll';
+import {unique} from '../common/getDistinct'
 
 const defaultFilters = {
   search: '',
-  gender: '',
+  terrain: '',
 };
 
 export function PlanetsList() {
@@ -24,11 +24,14 @@ export function PlanetsList() {
 
   const resetFilters = () => setFilters(defaultFilters);
 
+
+  const options = unique(planets, 'terrain') 
+
   const searching = (element: Planet) => {
     return element.name.toLowerCase().includes(filters.search.toLowerCase());
   };
   const filtering = (element: Planet) => {
-    return filters.gender === '' ? element : element.diameter === filters.gender;
+    return filters.terrain === '' ? element : element.terrain === filters.terrain;
   };
   if (loading && planets.length < 1) return <> "Loading" </>;
   if (error) return <>"Error occured, try again"</>;
@@ -37,6 +40,7 @@ export function PlanetsList() {
     <>
       <PlanetFilter
         filters={filters}
+        options={options}
         handleFilters={handleFilters}
         resetFilters={resetFilters}
       />

@@ -4,10 +4,11 @@ import {Starship} from './types';
 import StarshipFilter from './StarshipsFilter';
 import StarshipCard from './StarshipCard';
 import useFetchAll from '../hooks/useFetchAll';
+import { unique } from '../common/getDistinct';
 
 const defaultFilters = {
   search: '',
-  gender: '',
+  starship_class: '',
 };
 
 export function StarshipsList() {
@@ -21,6 +22,8 @@ export function StarshipsList() {
       [name]: value,
     });
   };
+  
+  const options = unique(starships, 'starship_class')
 
   const resetFilters = () => setFilters(defaultFilters);
 
@@ -28,8 +31,7 @@ export function StarshipsList() {
     return element.name.toLowerCase().includes(filters.search.toLowerCase());
   };
   const filtering = (element: Starship) => {
-    return  element
-    // filters.gender === '' ? element : element. === filters.gender;
+    return  filters.starship_class === '' ? element : element.starship_class === filters.starship_class;
   };
   if (loading && starships.length < 1) return <> "Loading" </>;
   if (error) return <>"Error occured, try again"</>;
@@ -37,6 +39,7 @@ export function StarshipsList() {
   return (
     <>
       <StarshipFilter
+      options={options}
         filters={filters}
         handleFilters={handleFilters}
         resetFilters={resetFilters}

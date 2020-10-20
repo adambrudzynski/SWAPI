@@ -13,7 +13,7 @@ export default function FilmCard({film}: PropTypes) {
         <Link to={`/films/${film.title}`}>
           <h2>{film.title}</h2>
         </Link>
-        <h6> Episode number: {film.episode_id}</h6>
+        <h6>Episode number: {film.episode_id}</h6>
         <h6>Director: {film.director}</h6>
         <h6>Producer: {film.producer}</h6>
       </div>

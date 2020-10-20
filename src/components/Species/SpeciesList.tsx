@@ -3,10 +3,11 @@ import {Species} from './types';
 import SpeciesFilter from './SpeciesFilter';
 import SpeciesCard from './SpeciesCard';
 import useFetchAll from '../hooks/useFetchAll';
+import { unique } from '../common/getDistinct';
 
 const defaultFilters = {
   search: '',
-  gender: '',
+  classification : '',
 };
 
 export function SpeciessList() {
@@ -21,14 +22,15 @@ export function SpeciessList() {
     });
   };
 
+  const options = unique(species, 'classification') 
+
   const resetFilters = () => setFilters(defaultFilters);
 
   const searching = (element: Species) => {
     return element.name.toLowerCase().includes(filters.search.toLowerCase());
   };
   const filtering = (element: Species) => {
-    return  element
-    // filters.gender === '' ? element : element. === filters.gender;
+    return  filters.classification === '' ? element : element.classification === filters.classification;
   };
   if (loading && species.length < 1) return <> "Loading" </>;
   if (error) return <>"Error occured, try again"</>;
@@ -37,6 +39,7 @@ export function SpeciessList() {
     <>
       <SpeciesFilter
         filters={filters}
+        options={options}
         handleFilters={handleFilters}
         resetFilters={resetFilters}
       />

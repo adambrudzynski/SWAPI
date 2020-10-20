@@ -4,20 +4,22 @@ interface Props {
   filters: Filters;
   handleFilters: (name: string, value: string) => void;
   resetFilters: () => void;
+  options: string[];
 }
 
 type Filters = {
   search: string;
-  gender: string;
+  terrain: string;
 };
 
 export default function PeopleFilter({
   filters,
   handleFilters,
   resetFilters,
+  options,
 }: Props) {
   return (
-    <div  className='filters'>
+    <div className="filters">
       <input
         placeholder="Search..."
         type="text"
@@ -27,17 +29,18 @@ export default function PeopleFilter({
           handleFilters('search', e.target.value)
         }
       />
+      <label> Terrain:</label>
       <select
-        name="gender"
-        value={filters.gender}
+        name="terrain"
+        value={filters.terrain}
         onChange={(e: React.ChangeEvent<HTMLSelectElement>): void =>
           handleFilters(e.target.name, e.target.value)
         }
       >
         <option value="">All</option>
-        <option value="female">Female</option>
-        <option value="male">Male</option>
-        <option value="n/a">n/a</option>
+        {options.map((option: string) => {
+          return <option value={option}>{option}</option>;
+        })}
       </select>
 
       <button onClick={resetFilters}>Reset filters</button>

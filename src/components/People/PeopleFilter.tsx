@@ -27,6 +27,7 @@ export default function PeopleFilter({
           handleFilters('search', e.target.value)
         }
       />
+      <label>Gender:</label>
       <select
         name="gender"
         value={filters.gender}
@@ -39,7 +40,7 @@ export default function PeopleFilter({
         <option value="male">Male</option>
         <option value="n/a">n/a</option>
       </select>
-
+      
       <button onClick={resetFilters}>Reset filters</button>
     </div>
   );
