@@ -1,12 +1,11 @@
 import React from 'react';
-import {useAuth} from './Auth';
+import {useDispatch} from 'react-redux';
+import {logout} from '../redux/auth/authActions';
 
 export default function Logout() {
-  const {setAuthTokens} = useAuth() as {
-    setAuthTokens: (data: string|null) => void;
-  };
+  const dispatch = useDispatch();
   return (
-    <button className="btn" onClick={()=> setAuthTokens(null)}>
+    <button className="btn" onClick={() => dispatch(logout())}>
       Logout
     </button>
   );

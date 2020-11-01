@@ -1,5 +1,6 @@
 import React, {ReactChild} from 'react';
-import {useAuth} from './Auth';
+import {useSelector} from 'react-redux';
+import {AuthState} from '../redux/auth/authReducer';
 import Login from './Login';
 
 type Props = {
@@ -7,9 +8,8 @@ type Props = {
 };
 
 export const Protected = ({children}: Props) => {
-  const {authTokens} = useAuth() as {authTokens: string | null}
-
-  if (authTokens === 'testtest') {
+  const isLoggedIn = useSelector(({auth}: {auth: AuthState}) => auth.loggedIn);
+  if (isLoggedIn) {
     return <>{children}</>;
   } else {
     return <Login />;
