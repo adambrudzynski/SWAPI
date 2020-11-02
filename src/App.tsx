@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {
   BrowserRouter as Router,
   Redirect,
@@ -6,7 +6,8 @@ import {
   Switch,
 } from 'react-router-dom';
 import './App.css';
-import {Protected} from './components/Auth/Protected';
+import Login from './components/Auth/Login';
+import {PrivateRoute} from './components/Auth/PrivateRoute';
 import Details from './components/common/Details';
 import {FilmsList} from './components/Films/FilmsList';
 import Navbar from './components/Navbar';
@@ -18,11 +19,12 @@ import {VehiclesList} from './components/Vehicles/VehicleList';
 
 function App() {
   return (
-    <Protected>
-      <Router>
-        <Navbar />
-        <div className="App">
-          <Switch>
+    <Router>
+      <Navbar />
+      <div className="App">
+        <Switch>
+          <Route exact path="/login" component={Login} />
+          <PrivateRoute>
             <Route
               path="/people/:name"
               exact
@@ -71,11 +73,11 @@ function App() {
             <Route path="/species" exact>
               <SpeciessList />
             </Route>
-            <Redirect to="/people" />
-          </Switch>
-        </div>
-      </Router>
-    </Protected>
+          </PrivateRoute>
+          <Redirect to="/people" />
+        </Switch>
+      </div>
+    </Router>
   );
 }
 

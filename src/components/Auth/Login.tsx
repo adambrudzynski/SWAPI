@@ -1,5 +1,9 @@
-import React, {MouseEvent, useState} from 'react';
+import React from 'react';
 import {useDispatch, useSelector} from 'react-redux';
+import {yupResolver} from '@hookform/resolvers/yup';
+import {Redirect, useLocation} from 'react-router';
+import * as yup from 'yup';
+import {useForm} from 'react-hook-form';
 import {login} from '../redux/auth/authActions';
 
 interface AuthType {
@@ -8,38 +12,50 @@ interface AuthType {
   error?: boolean;
 }
 
-export default function Login() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const error = useSelector(({auth}: {auth: AuthType}) => auth.error);
-  const dispatch = useDispatch();
-
-  const fakeLogin = (e: MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    dispatch(login(username, password));
+interface LocationState {
+  from: {
+    pathname: string;
   };
+}
+const schema = yup.object().shape({
+  email: yup.string().email().required('E-mail is required'),
+  password: yup.string().required('Password is required'),
+});
 
+export default function Login() {
+  const {register, handleSubmit, errors} = useForm({
+    resolver: yupResolver(schema),
+  });
+  const auth = useSelector(({auth}: {auth: AuthType}) => auth);
+  const dispatch = useDispatch();
+  const location = useLocation<LocationState>();
+  const {from} = location.state || {from: {pathname: '/people'}};
+
+  const onSubmit = handleSubmit(({email, password}) => {
+    dispatch(login(email, password));
+  });
+
+  if (auth && auth.loggedIn) return <Redirect to={from} />;
   return (
     <div className="login">
-      <span>Please login with username: test, password: test</span>
-      <form>
-        <input
-          type="text"
-          placeholder="username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
+      <p>Please login with:</p>
+      <p>username: test@test.test</p>
+      <p>password: test</p>
+      <form onSubmit={onSubmit}>
+        <input type="text" placeholder="e-mail" name="email" ref={register} />
+        <p className="login-error">{errors.email?.message} </p>
         <input
           type="password"
           placeholder="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          name="password"
+          ref={register}
         />
-        <button className="btn" onClick={(e) => fakeLogin(e)}>
-          Sign In
+        <p className="login-error"> {errors.password?.message} </p>
+        <button className="btn" type="submit">
+          Login
         </button>
       </form>
-      {error && (
+      {auth.error && (
         <span className="login-error">Invalid username or password</span>
       )}
     </div>

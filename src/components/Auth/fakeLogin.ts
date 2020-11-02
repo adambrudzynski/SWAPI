@@ -1,7 +1,12 @@
-const fakeLogin = (username: string, password: string) => {
+const FAKE_CREDENTIALS = {
+  email: 'test@test.test',
+  password: 'test',
+};
+
+const fakeLogin = (email: string, password: string) => {
   return new Promise((resolve, reject) => {
-    if (username === 'test' && password === 'test') {
-      localStorage.setItem('tokens', JSON.stringify(username + password));
+    if (email === FAKE_CREDENTIALS.email && password === FAKE_CREDENTIALS.password) {
+      localStorage.setItem('tokens', JSON.stringify(email + password));
       resolve(true);
     } else reject(false);
   });

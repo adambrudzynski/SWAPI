@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState, useRef} from 'react';
-import PersonCard from './PersonCard';
+import Card from './PersonCard';
 import {Person} from './types';
 import PeopleFilter from './PeopleFilter';
 import {useDispatch, useSelector} from 'react-redux';
@@ -20,14 +20,18 @@ const defaultFilters = {
 export function PeopleList() {
   const [filters, setFilters] = useState(defaultFilters);
   const dispatch = useDispatch();
-  const people = useSelector(({people}: {people: PeopleState}) => people.data);
-  const nextURL = useSelector(({people}: {people: PeopleState}) => people.nextURL);
-  const loading = useSelector(({people}: {people: PeopleState}) => people.loading);
+  const list = useSelector(({people}: {people: PeopleState}) => people.data);
+  const nextURL = useSelector(
+    ({people}: {people: PeopleState}) => people.nextURL
+  );
+  const loading = useSelector(
+    ({people}: {people: PeopleState}) => people.loading
+  );
   const error = useSelector(({people}: {people: PeopleState}) => people.error);
   const observer = useRef<any>(null);
 
   useEffect(() => {
-    people.length === 0 && dispatch(fetchData('https://swapi.dev/api/people/'));
+    list.length === 0 && dispatch(fetchData('https://swapi.dev/api/people/'));
   }, []);
 
   const handleFilters = (name: string, value: string) => {
@@ -67,12 +71,12 @@ export function PeopleList() {
         resetFilters={resetFilters}
       />
       <div className="list-container">
-        {people &&
-          (people as Person[])
+        {list &&
+          (list as Person[])
             .filter(searching)
             .filter(filtering)
-            .map((person: Person, index: number) => {
-              return <PersonCard key={person.name} person={person} />;
+            .map((listItem: Person, index: number) => {
+              return <Card key={listItem.name} person={listItem} />;
             })}
       </div>
       {loading && <>Loading....</>}
