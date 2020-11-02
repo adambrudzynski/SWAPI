@@ -1,9 +1,12 @@
-import React, {useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Species} from './types';
 import SpeciesFilter from './SpeciesFilter';
 import SpeciesCard from './SpeciesCard';
-import useFetchAll from '../hooks/useFetchAll';
 import { unique } from '../common/getDistinct';
+import { fetchData } from '../redux/api/apiActions';
+import useLoadMore from '../hooks/useLoadMore';
+import { useDispatch, useSelector } from 'react-redux';
+import { IRootState } from '../redux/rootReducer';
 
 const defaultFilters = {
   search: '',
@@ -11,8 +14,19 @@ const defaultFilters = {
 };
 
 export function SpeciessList() {
-  const [loading, error, species] = useFetchAll('https://swapi.dev/api/species/');
   const [filters, setFilters] = useState(defaultFilters);
+  const dispatch = useDispatch();
+  const list = useSelector<IRootState, Species[]>(({species}) => species.data);
+  const nextURL = useSelector<IRootState, string | null>(({species}) => species.nextURL);
+  const loading = useSelector<IRootState, boolean>(({species}) => species.loading);
+  const error = useSelector<IRootState, boolean>(({species}) => species.error);
+  const observer = useRef<any>(null);
+  const loadMore = useLoadMore(observer, nextURL, 'SPECIES', loading);
+
+  useEffect(() => {
+    list.length === 0 &&
+      dispatch(fetchData('https://swapi.dev/api/species/', 'SPECIES'));
+  }, []);
 
   const handleFilters = (name: string, value: string) => {
     console.log(name, value);
@@ -22,7 +36,7 @@ export function SpeciessList() {
     });
   };
 
-  const options = unique(species, 'classification') 
+  const options = unique(list, 'classification') 
 
   const resetFilters = () => setFilters(defaultFilters);
 
@@ -32,8 +46,6 @@ export function SpeciessList() {
   const filtering = (element: Species) => {
     return  filters.classification === '' ? element : element.classification === filters.classification;
   };
-  if (loading && species.length < 1) return <> "Loading" </>;
-  if (error) return <>"Error occured, try again"</>;
 
   return (
     <>
@@ -44,13 +56,16 @@ export function SpeciessList() {
         resetFilters={resetFilters}
       />
       <div className="list-container">
-        {(species as Species[])
+        {list && (list as Species[])
           .filter(searching)
           .filter(filtering)
           .map((species: Species) => {
             return <SpeciesCard key={species.name} species={species} />;
           })}
       </div>
+      {loading && <>Loading....</>}
+      {error && <>"Error occured, try again"</>}
+      <div ref={loadMore}></div>
     </>
   );
 }

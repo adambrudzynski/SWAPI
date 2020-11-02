@@ -1,10 +1,12 @@
-import React, {useState} from 'react';
-// import PersonCard from './PersonCard';
+import React, {useEffect, useRef, useState} from 'react';
 import {Starship} from './types';
 import StarshipFilter from './StarshipsFilter';
 import StarshipCard from './StarshipCard';
-import useFetchAll from '../hooks/useFetchAll';
 import { unique } from '../common/getDistinct';
+import { fetchData } from '../redux/api/apiActions';
+import useLoadMore from '../hooks/useLoadMore';
+import { useDispatch, useSelector } from 'react-redux';
+import { IRootState } from '../redux/rootReducer';
 
 const defaultFilters = {
   search: '',
@@ -12,8 +14,19 @@ const defaultFilters = {
 };
 
 export function StarshipsList() {
-  const [loading, error, starships] = useFetchAll('https://swapi.dev/api/starships/');
   const [filters, setFilters] = useState(defaultFilters);
+  const dispatch = useDispatch();
+  const list = useSelector<IRootState, Starship[]>(({starships}) => starships.data);
+  const nextURL = useSelector<IRootState, string | null>(({starships}) => starships.nextURL);
+  const loading = useSelector<IRootState, boolean>(({starships}) => starships.loading);
+  const error = useSelector<IRootState, boolean>(({starships}) => starships.error);
+  const observer = useRef<any>(null);
+  const loadMore = useLoadMore(observer, nextURL, 'STARSHIPS', loading);
+
+  useEffect(() => {
+    list.length === 0 &&
+      dispatch(fetchData('https://swapi.dev/api/starships/', 'STARSHIPS'));
+  }, []);
 
   const handleFilters = (name: string, value: string) => {
     console.log(name, value);
@@ -23,7 +36,7 @@ export function StarshipsList() {
     });
   };
   
-  const options = unique(starships, 'starship_class')
+  const options = unique(list, 'starship_class')
 
   const resetFilters = () => setFilters(defaultFilters);
 
@@ -33,9 +46,6 @@ export function StarshipsList() {
   const filtering = (element: Starship) => {
     return  filters.starship_class === '' ? element : element.starship_class === filters.starship_class;
   };
-  if (loading && starships.length < 1) return <> "Loading" </>;
-  if (error) return <>"Error occured, try again"</>;
-
   return (
     <>
       <StarshipFilter
@@ -45,13 +55,16 @@ export function StarshipsList() {
         resetFilters={resetFilters}
       />
       <div className="list-container">
-        {(starships as Starship[])
+        {list && (list as Starship[])
           .filter(searching)
           .filter(filtering)
           .map((starship: Starship) => {
             return <StarshipCard key={starship.name} starship={starship} />;
           })}
       </div>
+      {loading && <>Loading....</>}
+      {error && <>"Error occured, try again"</>}
+      <div ref={loadMore}></div>
     </>
   );
 }

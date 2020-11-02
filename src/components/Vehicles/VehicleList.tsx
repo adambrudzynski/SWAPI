@@ -1,9 +1,13 @@
-import React, {useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 // import PersonCard from './PersonCard';
 import {Vehicle} from './types';
 import VehicleFilter from './VehiclesFilter';
 import VehicleCard from './VehicleCard';
 import useFetchAll from '../hooks/useFetchAll';
+import { fetchData } from '../redux/api/apiActions';
+import useLoadMore from '../hooks/useLoadMore';
+import { useDispatch, useSelector } from 'react-redux';
+import { IRootState } from '../redux/rootReducer';
 
 const defaultFilters = {
   search: '',
@@ -11,9 +15,19 @@ const defaultFilters = {
 };
 
 export function VehiclesList() {
-  const [loading, error, vehicles] = useFetchAll('https://swapi.dev/api/vehicles/');
   const [filters, setFilters] = useState(defaultFilters);
+  const dispatch = useDispatch();
+  const list = useSelector<IRootState, Vehicle[]>(({vehicles}) => vehicles.data);
+  const nextURL = useSelector<IRootState, string | null>(({vehicles}) => vehicles.nextURL);
+  const loading = useSelector<IRootState, boolean>(({vehicles}) => vehicles.loading);
+  const error = useSelector<IRootState, boolean>(({vehicles}) => vehicles.error);
+  const observer = useRef<any>(null);
+  const loadMore = useLoadMore(observer, nextURL, 'VEHICLES', loading);
 
+  useEffect(() => {
+    list.length === 0 &&
+      dispatch(fetchData('https://swapi.dev/api/vehicles/', 'VEHICLES'));
+  }, []);
   const handleFilters = (name: string, value: string) => {
     console.log(name, value);
     setFilters({
@@ -29,11 +43,8 @@ export function VehiclesList() {
   };
   const filtering = (element: Vehicle) => {
     return  element
-    // filters.gender === '' ? element : element. === filters.gender;
   };
-  if (loading && vehicles.length < 1) return <> "Loading" </>;
-  if (error) return <>"Error occured, try again"</>;
-
+ 
   return (
     <>
       <VehicleFilter
@@ -42,13 +53,16 @@ export function VehiclesList() {
         resetFilters={resetFilters}
       />
       <div className="list-container">
-        {(vehicles as Vehicle[])
+        {list && (list as Vehicle[])
           .filter(searching)
           .filter(filtering)
           .map((vehicle: Vehicle) => {
             return <VehicleCard key={vehicle.name} vehicle={vehicle} />;
           })}
       </div>
+      {loading && <>Loading....</>}
+      {error && <>"Error occured, try again"</>}
+      <div ref={loadMore}></div>
     </>
   );
 }

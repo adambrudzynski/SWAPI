@@ -1,11 +1,9 @@
-import {Reducer} from 'redux';
-import {apiResponse, Person} from '../../common/types';
-import {Actions} from './apiActions';
+import {ApiResults} from '../../common/types';
 import {ReducerFactoryName} from './apiTypes';
 
 interface State {
   readonly loading: boolean;
-  readonly data: Person[] | [];
+  readonly data: ApiResults;
   readonly error: boolean;
   readonly nextURL: string | null;
 }
@@ -42,32 +40,3 @@ export const apiReducerFactory = (name: ReducerFactoryName) => {
     }
   };
 };
-
-// const apiReducer: Reducer<State, ApiActionTypes> = (
-//   state = initialState,
-//   action
-// ) => {
-//   switch (action.type) {
-//     case FETCH_REQUEST:
-//       return {
-//         ...state,
-//         loading: true,
-//       };
-//     case FETCH_SUCCESS:
-//       return {
-//         loading: false,
-//         data: [...state.data, ...action.payload.results],
-//         nextURL: action.payload.next,
-//         error: false,
-//       };
-//     case FETCH_ERROR:
-//       return {
-//         ...state,
-//         loading: false,
-//         error: true,
-//       };
-//     default:
-//       return state;
-//   }
-// };
-// export default apiReducer;

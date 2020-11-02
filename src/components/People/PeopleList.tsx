@@ -1,16 +1,11 @@
-import React, {useCallback, useEffect, useState, useRef} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import Card from './PersonCard';
 import {Person} from './types';
 import PeopleFilter from './PeopleFilter';
 import {useDispatch, useSelector} from 'react-redux';
 import {fetchData} from '../redux/api/apiActions';
-
-interface PeopleState {
-  data: Person[] | [];
-  nextURL: string | null;
-  loading: boolean;
-  error: string | boolean;
-}
+import useLoadMore from '../hooks/useLoadMore';
+import { IRootState } from '../redux/rootReducer';
 
 const defaultFilters = {
   search: '',
@@ -20,18 +15,16 @@ const defaultFilters = {
 export function PeopleList() {
   const [filters, setFilters] = useState(defaultFilters);
   const dispatch = useDispatch();
-  const list = useSelector(({people}: {people: PeopleState}) => people.data);
-  const nextURL = useSelector(
-    ({people}: {people: PeopleState}) => people.nextURL
-  );
-  const loading = useSelector(
-    ({people}: {people: PeopleState}) => people.loading
-  );
-  const error = useSelector(({people}: {people: PeopleState}) => people.error);
+  const list = useSelector<IRootState, Person[]>(({people}) => people.data);
+  const nextURL = useSelector<IRootState, string | null>(({people}) => people.nextURL);
+  const loading = useSelector<IRootState, boolean>(({people}) => people.loading);
+  const error = useSelector<IRootState, boolean>(({people})  => people.error);
   const observer = useRef<any>(null);
+  const loadMore = useLoadMore(observer, nextURL, 'PEOPLE', loading);
 
   useEffect(() => {
-    list.length === 0 && dispatch(fetchData('https://swapi.dev/api/people/', 'PEOPLE'));
+    list.length === 0 &&
+      dispatch(fetchData('https://swapi.dev/api/people/', 'PEOPLE'));
   }, []);
 
   const handleFilters = (name: string, value: string) => {
@@ -40,20 +33,6 @@ export function PeopleList() {
       [name]: value,
     });
   };
-
-  const lastElementRef = useCallback(
-    (element) => {
-      if (loading) return;
-      if (observer.current) observer.current.disconnect();
-      observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && nextURL) {
-          dispatch(fetchData(nextURL, 'PEOPLE'));
-        }
-      });
-      if (element && observer.current) observer.current.observe(element);
-    },
-    [loading, nextURL, dispatch]
-  );
 
   const resetFilters = () => setFilters(defaultFilters);
 
@@ -81,7 +60,7 @@ export function PeopleList() {
       </div>
       {loading && <>Loading....</>}
       {error && <>"Error occured, try again"</>}
-      <div ref={lastElementRef}></div>
+      <div ref={loadMore}></div>
     </>
   );
 }
