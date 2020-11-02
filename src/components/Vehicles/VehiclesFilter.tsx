@@ -8,7 +8,6 @@ interface Props {
 
 type Filters = {
   search: string;
-  gender: string;
 };
 
 export default function VehicleFilter({

@@ -1,9 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
-// import PersonCard from './PersonCard';
 import {Vehicle} from './types';
 import VehicleFilter from './VehiclesFilter';
 import VehicleCard from './VehicleCard';
-import useFetchAll from '../hooks/useFetchAll';
 import { fetchData } from '../redux/api/apiActions';
 import useLoadMore from '../hooks/useLoadMore';
 import { useDispatch, useSelector } from 'react-redux';
@@ -11,7 +9,6 @@ import { IRootState } from '../redux/rootReducer';
 
 const defaultFilters = {
   search: '',
-  gender: '',
 };
 
 export function VehiclesList() {
