@@ -31,7 +31,7 @@ export function PeopleList() {
   const observer = useRef<any>(null);
 
   useEffect(() => {
-    list.length === 0 && dispatch(fetchData('https://swapi.dev/api/people/'));
+    list.length === 0 && dispatch(fetchData('https://swapi.dev/api/people/', 'PEOPLE'));
   }, []);
 
   const handleFilters = (name: string, value: string) => {
@@ -47,7 +47,7 @@ export function PeopleList() {
       if (observer.current) observer.current.disconnect();
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && nextURL) {
-          dispatch(fetchData(nextURL));
+          dispatch(fetchData(nextURL, 'PEOPLE'));
         }
       });
       if (element && observer.current) observer.current.observe(element);

@@ -1,56 +1,56 @@
-import {FETCH_REQUEST, FETCH_SUCCESS, FETCH_ERROR} from './apiTypes';
+import {
+  ReducerFactoryName,
+  FetchSuccessAction,
+  FetchErrorAction,
+  FetchRequestAction,
+  FetchRequestTypes,
+  FetchSuccessTypes,
+  FetchErrorTypes,
+} from './apiTypes';
 import {Dispatch} from 'redux';
-import {apiResponse} from '../../People/types';
+import {apiResponse} from '../../common/types';
 
 type FetchDataAction = {
-   type: 'FETCH_REQUEST' | 'FETCH_SUCCESS' | 'FETCH_ERROR';
-   payload?: apiResponse;
+  type: FetchRequestTypes | FetchSuccessTypes | FetchErrorTypes;
+  payload?: apiResponse;
 };
 
-type FetchRequest = {
-  type: typeof FETCH_REQUEST;
-};
+export type Actions = FetchDataAction | FetchSuccessAction | FetchErrorAction;
 
-type FetchSuccess = {
-  type: typeof FETCH_SUCCESS;
-  payload: apiResponse;
-};
-
-type FetchError = {
-  type: typeof FETCH_ERROR;
-};
-
-export const fetchData = (endpoint: string) => (
-  dispatch: Dispatch<FetchDataAction>
+export const fetchData = (endpoint: string, type: ReducerFactoryName) => (
+  dispatch: Dispatch<Actions>
 ) => {
-  dispatch(fetchRequest());
+  dispatch(fetchRequest(type));
   fetch(endpoint)
     .then((response) => {
       return response.json();
     })
     .then((data) => {
-      dispatch(fetchSuccess(data));
+      dispatch(fetchSuccess(data, type));
     })
     .catch((error) => {
-      dispatch(fetchError());
+      dispatch(fetchError(type));
     });
 };
 
-export const fetchRequest = (): FetchRequest => {
+export const fetchRequest = (type: ReducerFactoryName): FetchRequestAction => {
   return {
-    type: FETCH_REQUEST,
+    type: `FETCH_REQUEST_${type}` as FetchRequestTypes,
   };
 };
 
-export const fetchSuccess = (data: apiResponse): FetchSuccess => {
+export const fetchSuccess = (
+  data: apiResponse,
+  type: ReducerFactoryName
+): FetchSuccessAction => {
   return {
-    type: FETCH_SUCCESS,
+    type: `FETCH_SUCCESS_${type}` as FetchSuccessTypes,
     payload: data,
   };
 };
 
-export const fetchError = (): FetchError => {
+export const fetchError = (type: ReducerFactoryName): FetchErrorAction => {
   return {
-    type: FETCH_ERROR,
+    type: `FETCH_ERROR_${type}` as FetchErrorTypes,
   };
 };

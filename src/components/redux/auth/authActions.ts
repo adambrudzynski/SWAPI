@@ -1,6 +1,5 @@
 import {Dispatch} from 'redux';
 import fakeLogin from '../../Auth/fakeLogin';
-import {createBrowserHistory} from 'history';
 import {LOGIN_ERROR, LOGIN_REQUEST, LOGIN_SUCCESS, LOGOUT} from './authTypes';
 
 type FromType = {

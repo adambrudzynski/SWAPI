@@ -1,52 +1,73 @@
 import {Reducer} from 'redux';
-import {Person} from '../../common/types';
-import {
-  FETCH_ERROR,
-  FETCH_SUCCESS,
-  FETCH_REQUEST,
-  ApiActionTypes,
-} from './apiTypes';
+import {apiResponse, Person} from '../../common/types';
+import {Actions} from './apiActions';
+import {ReducerFactoryName} from './apiTypes';
 
 interface State {
-  loading: boolean;
-  data: Person[] | [];
-  error: boolean;
-  nextURL: string | null;
+  readonly loading: boolean;
+  readonly data: Person[] | [];
+  readonly error: boolean;
+  readonly nextURL: string | null;
 }
 
-const initialState = {
+const initialState: State = {
   loading: false,
   data: [],
   error: false,
   nextURL: null,
 };
-
-const apiReducer: Reducer<State, ApiActionTypes> = (
-  state = initialState,
-  action
-) => {
-  switch (action.type) {
-    case FETCH_REQUEST:
-      return {
-        ...state,
-        loading: true,
-      };
-    case FETCH_SUCCESS:
-      return {
-        loading: false,
-        data: [...state.data, ...action.payload.results],
-        nextURL: action.payload.next,
-        error: false,
-      };
-    case FETCH_ERROR:
-      return {
-        ...state,
-        loading: false,
-        error: true,
-      };
-    default:
-      return state;
-  }
+export const apiReducerFactory = (name: ReducerFactoryName) => {
+  return (state = initialState, action: any) => {
+    switch (action.type) {
+      case `FETCH_REQUEST_${name}`:
+        return {
+          ...state,
+          loading: true,
+        };
+      case `FETCH_SUCCESS_${name}`:
+        return {
+          loading: false,
+          data: [...state.data, ...action.payload.results],
+          nextURL: action.payload.next,
+          error: false,
+        };
+      case `FETCH_ERROR_${name}`:
+        return {
+          ...state,
+          loading: false,
+          error: true,
+        };
+      default:
+        return state;
+    }
+  };
 };
 
-export default apiReducer;
+// const apiReducer: Reducer<State, ApiActionTypes> = (
+//   state = initialState,
+//   action
+// ) => {
+//   switch (action.type) {
+//     case FETCH_REQUEST:
+//       return {
+//         ...state,
+//         loading: true,
+//       };
+//     case FETCH_SUCCESS:
+//       return {
+//         loading: false,
+//         data: [...state.data, ...action.payload.results],
+//         nextURL: action.payload.next,
+//         error: false,
+//       };
+//     case FETCH_ERROR:
+//       return {
+//         ...state,
+//         loading: false,
+//         error: true,
+//       };
+//     default:
+//       return state;
+//   }
+// };
+// export default apiReducer;
