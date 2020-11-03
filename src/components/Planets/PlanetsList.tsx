@@ -26,7 +26,7 @@ export function PlanetsList() {
   useEffect(() => {
     list.length === 0 &&
       dispatch(fetchData('https://swapi.dev/api/planets/', 'PLANETS'));
-  }, []);
+  }, [dispatch, list]);
 
   const handleFilters = (name: string, value: string) => {
     console.log(name, value);

@@ -25,7 +25,7 @@ export function PeopleList() {
   useEffect(() => {
     list.length === 0 &&
       dispatch(fetchData('https://swapi.dev/api/people/', 'PEOPLE'));
-  }, []);
+  }, [dispatch, list]);
 
   const handleFilters = (name: string, value: string) => {
     setFilters({

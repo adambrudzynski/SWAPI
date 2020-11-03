@@ -26,7 +26,7 @@ export function SpeciessList() {
   useEffect(() => {
     list.length === 0 &&
       dispatch(fetchData('https://swapi.dev/api/species/', 'SPECIES'));
-  }, []);
+  }, [dispatch, list]);
 
   const handleFilters = (name: string, value: string) => {
     console.log(name, value);

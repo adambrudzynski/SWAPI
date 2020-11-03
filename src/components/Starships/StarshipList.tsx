@@ -26,7 +26,7 @@ export function StarshipsList() {
   useEffect(() => {
     list.length === 0 &&
       dispatch(fetchData('https://swapi.dev/api/starships/', 'STARSHIPS'));
-  }, []);
+  }, [dispatch, list]);
 
   const handleFilters = (name: string, value: string) => {
     console.log(name, value);

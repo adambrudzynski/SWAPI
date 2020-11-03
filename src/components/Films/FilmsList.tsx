@@ -25,7 +25,7 @@ export function FilmsList() {
   useEffect(() => {
     list.length === 0 &&
       dispatch(fetchData('https://swapi.dev/api/films/', 'FILMS'));
-  }, []);
+  }, [dispatch, list]);
 
   const handleFilters = (name: string, value: string) => {
     console.log(name, value);

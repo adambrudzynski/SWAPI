@@ -24,7 +24,7 @@ export function VehiclesList() {
   useEffect(() => {
     list.length === 0 &&
       dispatch(fetchData('https://swapi.dev/api/vehicles/', 'VEHICLES'));
-  }, []);
+  }, [dispatch, list]);
   const handleFilters = (name: string, value: string) => {
     console.log(name, value);
     setFilters({
