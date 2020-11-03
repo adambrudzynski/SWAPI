@@ -74,8 +74,9 @@ function App() {
               <SpeciessList />
             </Route>
           </PrivateRoute>
-          <Redirect to="/people" />
+         
         </Switch>
+        <Redirect from="/" to="/people" />
       </div>
     </Router>
   );
